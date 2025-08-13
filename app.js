@@ -46,9 +46,9 @@ class Platform {
 }
 
 const player = new Player();
-const platform = new Platform();
+// const platform = new Platform();
 
-const platformPositions = [{ x: 700, y: 450 }];
+const platformPositions = [{ x: 900, y: 450 }];
 
 const platforms = platformPositions.map(
   (platform) => new Platform(platform.x, platform.y)
@@ -84,18 +84,17 @@ function update() {
     newTopPos += moveSpeed;
   }
 
+  // AABB collision
   platforms.forEach((platform) => {
-    if (
-      player.position.y + player.height <= platform.position.y &&
-      newTopPos + player.height >= platform.position.y
-    ) {
-      topPos = newTopPos;
-    }
-    if (
-      player.position.x + player.width <= platform.position.x &&
-      newLeftPos + player.width >= platform.position.x
-    ) {
+    const isColliding =
+      newLeftPos < platform.position.x + platform.width &&
+      newLeftPos + player.width > platform.position.x &&
+      newTopPos < platform.position.y + platform.height &&
+      newTopPos + player.height > platform.position.y;
+
+    if (!isColliding) {
       leftPos = newLeftPos;
+      topPos = newTopPos;
     }
   });
 
@@ -109,3 +108,18 @@ function update() {
 }
 
 update();
+
+// platforms.forEach((platform) => {
+//   if (
+//     player.position.y + player.height <= platform.position.y &&
+//     newTopPos + player.height >= platform.position.y
+//   ) {
+//     topPos = newTopPos;
+//   }
+//   if (
+//     player.position.x + player.width <= platform.position.x &&
+//     newLeftPos + player.width >= platform.position.x
+//   ) {
+//     leftPos = newLeftPos;
+//   }
+// });
