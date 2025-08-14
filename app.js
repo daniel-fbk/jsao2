@@ -48,7 +48,10 @@ class Platform {
 const player = new Player();
 // const platform = new Platform();
 
-const platformPositions = [{ x: 900, y: 450 }];
+const platformPositions = [
+  { x: 900, y: 450 },
+  { x: 500, y: 300 },
+];
 
 const platforms = platformPositions.map(
   (platform) => new Platform(platform.x, platform.y)
@@ -86,15 +89,25 @@ function update() {
 
   // AABB collision
   platforms.forEach((platform) => {
-    const isColliding =
+    const isCollidingX =
       newLeftPos < platform.position.x + platform.width &&
       newLeftPos + player.width > platform.position.x &&
+      topPos < platform.position.y + platform.height &&
+      topPos + player.height > platform.position.y;
+
+    const isCollidingY =
+      leftPos < platform.position.x + platform.width &&
+      leftPos + player.width > platform.position.x &&
       newTopPos < platform.position.y + platform.height &&
       newTopPos + player.height > platform.position.y;
 
-    if (!isColliding) {
+    if (!isCollidingX) {
       leftPos = newLeftPos;
+      console.log("X is not colliding");
+    }
+    if (!isCollidingY) {
       topPos = newTopPos;
+      console.log("Y is not colliding");
     }
   });
 
@@ -103,8 +116,6 @@ function update() {
 
   platforms.forEach((platform) => platform.draw());
   player.update();
-  console.log(player.position.x);
-  // console.log(keysPressed);
 }
 
 update();
@@ -121,5 +132,19 @@ update();
 //     newLeftPos + player.width >= platform.position.x
 //   ) {
 //     leftPos = newLeftPos;
+//   }
+// });
+
+// platforms.forEach((platform) => {
+//   const isColliding =
+//     newLeftPos < platform.position.x + platform.width &&
+//     newLeftPos + player.width > platform.position.x &&
+//     newTopPos < platform.position.y + platform.height &&
+//     newTopPos + player.height > platform.position.y;
+//   console.log("true");
+
+//   if (!isColliding) {
+//     leftPos = newLeftPos;
+//     topPos = newTopPos;
 //   }
 // });
