@@ -46,17 +46,20 @@ class Platform {
 }
 
 const player = new Player();
-// const platform = new Platform();
 
+// object with x and y coordinates
 const platformPositions = [
   { x: 900, y: 450 },
   { x: 500, y: 300 },
+  { x: 500, y: 700 },
 ];
 
+// map method to create a new array using data from the platform class and setting x and y from platformPositions
 const platforms = platformPositions.map(
   (platform) => new Platform(platform.x, platform.y)
 );
 
+// movespeed controls how far the players moves with each input
 const moveSpeed = 10;
 const keysPressed = {};
 
@@ -68,12 +71,20 @@ document.addEventListener("keyup", (e) => {
   keysPressed[e.key] = false;
 });
 
+document.addEventListener("click", (e) => {
+  leftPos = e.offsetX;
+  topPos = e.offsetY;
+});
+
 function update() {
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
   requestAnimationFrame(update);
+
+  // temporary variables for player x and y makes it easier to work with
   let newLeftPos = leftPos;
   let newTopPos = topPos;
 
+  // checks if key pressed is true in the array, also checks if x or y is less than or more than canvas size
   if (keysPressed["a"] && leftPos > 0) {
     newLeftPos -= moveSpeed;
   }
@@ -87,37 +98,46 @@ function update() {
     newTopPos += moveSpeed;
   }
 
+  let xColliding = false;
+  let yColliding = false;
+
   // AABB collision
+  // checks each platform to see if player is colliding, compares current and new position to enable gliding
   platforms.forEach((platform) => {
-    const isCollidingX =
+    if (
       newLeftPos < platform.position.x + platform.width &&
       newLeftPos + player.width > platform.position.x &&
       topPos < platform.position.y + platform.height &&
-      topPos + player.height > platform.position.y;
-
-    const isCollidingY =
-      leftPos < platform.position.x + platform.width &&
-      leftPos + player.width > platform.position.x &&
-      newTopPos < platform.position.y + platform.height &&
-      newTopPos + player.height > platform.position.y;
-
-    if (!isCollidingX) {
-      leftPos = newLeftPos;
-      console.log("X is not colliding");
-    }
-    if (!isCollidingY) {
-      topPos = newTopPos;
-      console.log("Y is not colliding");
+      topPos + player.height > platform.position.y
+    ) {
+      xColliding = true;
     }
   });
 
-  player.position.y = topPos;
+  platforms.forEach((platform) => {
+    if (
+      leftPos < platform.position.x + platform.width &&
+      leftPos + player.width > platform.position.x &&
+      newTopPos < platform.position.y + platform.height &&
+      newTopPos + player.height > platform.position.y
+    ) {
+      yColliding = true;
+    }
+  });
+
+  // if colliding is false, update position variable
+  if (!xColliding) leftPos = newLeftPos;
+  if (!yColliding) topPos = newTopPos;
+
+  // moves the player
   player.position.x = leftPos;
+  player.position.y = topPos;
 
   platforms.forEach((platform) => platform.draw());
   player.update();
 }
 
+// to start the animation loop
 update();
 
 // platforms.forEach((platform) => {
